@@ -12,13 +12,16 @@ namespace minimal {
 // Minimal implementation of client handlers.
 class Client : public CefClient,
                public CefDisplayHandler,
-               public CefLifeSpanHandler {
+               public CefLifeSpanHandler,
+               public CefDownloadHandler
+{
  public:
   Client();
 
   // CefClient methods:
   CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
   CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
+  CefRefPtr<CefDownloadHandler> GetDownloadHandler() override { return this; }
 
   // CefDisplayHandler methods:
   void OnTitleChange(CefRefPtr<CefBrowser> browser,
@@ -28,6 +31,22 @@ class Client : public CefClient,
   void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
   bool DoClose(CefRefPtr<CefBrowser> browser) override;
   void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
+
+  // CefDownloadHandler methods:
+  bool CanDownload(CefRefPtr<CefBrowser> browser,
+                   const CefString& url,
+                   const CefString& request_method) {
+
+    LOG(ERROR) << "CanDownload :)))";
+    return true;
+  }
+  bool OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDownloadItem> download_item,
+                        const CefString& suggested_name,
+                        CefRefPtr<CefBeforeDownloadCallback> callback) {
+    callback->Continue("/tmp/dummy.bin", true);
+    return true;
+    }
 
  private:
   IMPLEMENT_REFCOUNTING(Client);
